@@ -42,17 +42,28 @@ def FindLink(PageNum,InputData,word):
             if not os.path.exists("./" + word):
                 os.mkdir('./' + word)
 
-            for StepOne in soup.select('.mimg'):
-                print(type(StepOne))
-                link=StepOne.attrs['src']
+            for StepOne in soup.select('.iusc'):
+                link = StepOne.attrs['href']
+                link='https://cn.bing.com'+link
+
+                parse_result = urllib.parse.urlparse(link)
+
+                lst_query = urllib.parse.parse_qsl(parse_result.query)  # 使用parse_qsl返回列表
+                dict1 = dict(lst_query)  # 将返回的列表转换为字典
+                mediaurl=dict1.get('mediaurl')
+
                 count = len(os.listdir('./' + word)) + 1
-                SaveImage(link,word,count)
-        except:
-            print('URL OPENING ERROR !')
+                SaveImage(mediaurl,word,count)
+        except Exception as e:
+            print(e)
+
+#https://cn.bing.com/images/search?view=detailV2&ccid=GWu4xSvg&id=720A65ED142E68F0C3EA43C5B1D536E423BACD10&thid=OIP.GWu4xSvggKN_5eW48Bn7XQHaF7&mediaurl=http%3a%2f%2fpic5.nipic.com%2f20100128%2f4159633_091147761472_2.jpg&exph=819&expw=1024&q=%e9%93%b6%e8%a1%8c%e5%8d%a1&simid=607996750287472454&selectedIndex=0&ajaxhist=0
+#https://cn.bing.com/images/search?view=detailV2&ccid=FyPv4HU3&id=736FAE4071CAF037A359F90E1C9BF1A7C3F31DFF&thid=OIP.FyPv4HU3x3wFbNSMz6KbogHaFC&mediaurl=http%3A%2F%2Fpic.baike.soso.com%2Fp%2F20130621%2F20130621111328-1696794195.jpg&exph=340&expw=500&q=%e9%93%b6%e8%a1%8c%e5%8d%a1&simid=608018560113836225&selectedindex=1&ajaxhist=0&vt=0
 if __name__=='__main__':
     #输入需要加载的页数，每页35幅图像
-    PageNum = 10
+    PageNum = 100
     #输入需要搜索的关键字
-    word='银行卡'
-    InputData=urllib.parse.quote(word)
-    FindLink(PageNum,InputData,word)
+    word=['护照','身份证','红头文件','银行卡']
+    for w in word:
+        InputData=urllib.parse.quote(w)
+        FindLink(PageNum,InputData,w)
